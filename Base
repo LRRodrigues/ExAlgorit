@@ -1,0 +1,87 @@
+import re
+import time
+import logging
+from typing import Optional, Tuple
+import requests
+from lxml import html
+
+# === CONFIGURAÇÃO DE LOG ===
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("log_sistema.txt"),
+        logging.StreamHandler()
+    ]
+)
+
+def validar_nome_usuario(nome: str) -> bool:
+    return len(nome) >= 3 and nome.replace(" ", "").isalpha()
+
+def solicitar_usuario() -> str:
+    while True:
+        nome = input("Digite seu nome: ").strip()
+        if validar_nome_usuario(nome):
+            logging.info(f"Usuário identificado: {nome}")
+            return nome
+        else:
+            print("Nome inválido. Deve conter ao menos 3 letras e apenas caracteres alfabéticos.")
+
+def solicitar_numero_alvo() -> str:
+    padrao = r'^-?\d+(?:[\.,]\d+)?$'
+    while True:
+        entrada = input("Digite o número que deseja monitorar (ex: 5,718 ou -3,14): ").strip()
+        entrada_normalizada = entrada.replace(".", "").replace(",", ".")
+        if re.match(padrao, entrada_normalizada):
+            logging.info(f"Número alvo definido para monitoramento: {entrada}")
+            return entrada
+        else:
+            print("Número inválido. Exemplo de formatos válidos: -10, 20.5, 3,1415")
+
+def buscar_numero_na_pagina(url: str, numero_alvo: str) -> Optional[str]:
+    try:
+        resposta = requests.get(url, timeout=10)
+        resposta.raise_for_status()
+        tree = html.fromstring(resposta.content)
+
+        # Verificar se o número alvo está no conteúdo da página
+        if numero_alvo in tree.text_content():
+            return numero_alvo
+        else:
+            return None
+    except Exception as e:
+        logging.error(f"Erro ao buscar número na página: {e}")
+        return None
+
+def monitorar_alteracoes(url: str, numero_alvo: str, intervalo: int = 60):
+    """
+    Monitora a presença de um número na página da URL.
+    """
+    while True:
+        encontrado = buscar_numero_na_pagina(url, numero_alvo)
+
+        if encontrado:
+            logging.info(f"Número '{encontrado}' ainda presente na página.")
+        else:
+            logging.warning(f"Número '{numero_alvo}' não está mais presente na página.")
+
+        time.sleep(intervalo)
+
+def main():
+    print("=== SISTEMA DE MONITORAMENTO DE NÚMEROS EM PÁGINAS WEB ===")
+    usuario = solicitar_usuario()
+    url = input("Digite a URL que deseja monitorar: ").strip()
+    numero_alvo = solicitar_numero_alvo()
+    intervalo = input("Digite o intervalo de checagem em segundos (padrão 60): ").strip()
+
+    try:
+        intervalo = int(intervalo) if intervalo else 60
+    except ValueError:
+        logging.warning("Intervalo inválido informado. Usando valor padrão de 60 segundos.")
+        intervalo = 60
+
+    logging.info(f"Usuário '{usuario}' iniciou o monitoramento da URL: {url}")
+    monitorar_alteracoes(url, numero_alvo, intervalo)
+
+if __name__ == "__main__":
+    main()
