@@ -17,7 +17,6 @@ from webdriver_manager.chrome import ChromeDriverManager
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
-
 # Log geral
 logging.basicConfig(
     filename="monitoramento.log",
@@ -32,24 +31,20 @@ handler_valores.setFormatter(logging.Formatter('%(asctime)s - %(message)s'))
 log_valores.addHandler(handler_valores)
 log_valores.setLevel(logging.INFO)
 
-
 def log_usuario(nome: str):
     if not re.fullmatch(r"[A-Za-z ]{3,}", nome):
         raise ValueError("Nome inválido. Use ao menos 3 letras.")
     logging.info(f"Usuário '{nome}' iniciou o monitoramento.")
-
 
 def log_recursos():
     cpu = psutil.cpu_percent()
     mem = psutil.virtual_memory().percent
     logging.info(f"CPU: {cpu}%, Memória: {mem}%")
 
-
 class PaginaMonitorada:
-    def __init__(self, url: str, numero: str):
+    def __init__(self, url: str):
         self.url = url
-        self.numero = numero
-        self.ultima_ocorrencia = ""
+        self.ultimo_valor = ""
         self.driver = self._setup_driver()
 
     def _setup_driver(self):
@@ -71,22 +66,27 @@ class PaginaMonitorada:
     def buscar_numero(self) -> Optional[str]:
         try:
             self.driver.get(self.url)
-            wait = WebDriverWait(self.driver, 5)
-            body = wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-            texto = body.text
+            wait = WebDriverWait(self.driver, 20)  # tempo aumentado
 
-            match = re.search(re.escape(self.numero), texto)
-            if match:
-                logging.info(f"Número '{self.numero}' localizado.")
+            # Espera até o elemento com o data-test estar presente
+            elemento = wait.until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, '[data-test="instrument-price-last"]'))
+            )
+
+            texto = elemento.text.strip()
+            if texto:
+                logging.info(f"Valor localizado: {texto}")
                 return texto
+            else:
+                logging.warning("Elemento encontrado, mas sem texto.")
             return None
         except Exception as e:
             logging.error(f"Erro na busca: {e}")
             return None
 
+
     def fechar(self):
         self.driver.quit()
-
 
 class MonitorArquivos(FileSystemEventHandler):
     def on_modified(self, event):
@@ -101,23 +101,17 @@ class MonitorArquivos(FileSystemEventHandler):
         observer.start()
         return observer
 
-
 async def monitoramento_web(monitor: PaginaMonitorada, intervalo: int = 60):
     logging.info(f"Iniciando monitoramento da URL: {monitor.url}")
     try:
         while True:
             log_recursos()
-            conteudo = await asyncio.to_thread(monitor.buscar_numero)
+            valor = await asyncio.to_thread(monitor.buscar_numero)
 
-            if conteudo and conteudo != monitor.ultima_ocorrencia:
-                logging.info("Alteração detectada na página.")
-                monitor.ultima_ocorrencia = conteudo
-
-                # Extrai o trecho com o número e salva no log específico
-                match = re.search(re.escape(monitor.numero) + r".{0,20}", conteudo)
-                if match:
-                    valor_encontrado = match.group(0).strip()
-                    log_valores.info(f"Novo valor detectado: {valor_encontrado}")
+            if valor and valor != monitor.ultimo_valor:
+                logging.info(f"Valor alterado: {valor}")
+                monitor.ultimo_valor = valor
+                log_valores.info(f"Novo valor detectado: {valor}")
 
             await asyncio.sleep(intervalo)
     except asyncio.CancelledError:
@@ -125,16 +119,14 @@ async def monitoramento_web(monitor: PaginaMonitorada, intervalo: int = 60):
     finally:
         monitor.fechar()
 
-
 async def main():
     try:
         nome = input("Seu nome: ").strip()
         log_usuario(nome)
 
-        url = input("URL a monitorar: ").strip()
-        numero = input("Número a buscar: ").strip()
+        url = "https://br.investing.com/crypto/bitcoin"
+        monitor = PaginaMonitorada(url)
 
-        monitor = PaginaMonitorada(url, numero)
         if not monitor.validar_url():
             print("URL inválida.")
             return
@@ -159,7 +151,6 @@ async def main():
             observer.join()
         except:
             pass
-
 
 if __name__ == "__main__":
     asyncio.run(main())

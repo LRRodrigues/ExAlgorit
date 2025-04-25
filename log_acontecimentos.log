@@ -1,0 +1,15 @@
+2025-04-25 00:55:55,191 - INFO - Usuário: kami
+2025-04-25 00:55:55,191 - INFO - URL: https://br.tradingview.com/symbols/BMFBOVESPA-IBOV/
+2025-04-25 00:55:55,191 - INFO - Valor exato a buscar: 134.580,43
+2025-04-25 00:55:55,192 - CRITICAL - Erro crítico: Message: Unable to obtain driver for chrome; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors/driver_location
+
+2025-04-25 00:57:12,581 - INFO - Usuário: kami
+2025-04-25 00:57:12,581 - INFO - URL: https://br.tradingview.com/symbols/BMFBOVESPA-IBOV/
+2025-04-25 00:57:12,581 - INFO - Valor exato a buscar: 134.580,43
+2025-04-25 00:57:15,852 - INFO - Página carregada com sucesso.
+2025-04-25 00:57:15,884 - INFO - XPath gerado: /html[1]/body[1]/div[3]/main[1]/div[1]/div[1]/div[1]/div[1]/div[1]/span[1]/span[1]
+2025-04-25 00:57:15,885 - INFO - Iniciando monitoramento do valor...
+2025-04-25 00:57:15,903 - INFO - Nenhuma alteração detectada.
+2025-04-25 00:57:25,917 - INFO - Nenhuma alteração detectada.
+2025-04-25 00:57:35,930 - INFO - Nenhuma alteração detectada.
+2025-04-25 00:57:45,952 - INFO - Nenhuma alteração detectada.
