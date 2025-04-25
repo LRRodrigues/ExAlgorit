@@ -40,6 +40,7 @@ O script abrirá o site de forma invisível (modo headless), localizará o valor
 ## 📝 Logs
 
 log_acontecimentos.log: Log geral de eventos e erros.
+
 valores_atualizados.log: Log específico com as mudanças de valor detectadas.
 
 ## ❗ Observações
