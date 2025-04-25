@@ -24,13 +24,15 @@ Execute o script:
 
 bash
 ```
-python monitorador.py
+python ultimo.py
 ```
 
 Siga as instruções no terminal:
 
   -Informe seu nome.
+  
   -Informe a URL do site.
+  
   -Informe o valor exato que deseja monitorar (exemplo: R$5.000,00 ou 5,00).
 
 O script abrirá o site de forma invisível (modo headless), localizará o valor e iniciará o monitoramento.
