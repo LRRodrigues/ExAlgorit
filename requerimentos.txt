@@ -1,5 +1,4 @@
-requests
-beautifulsoup4
-selenium
-psutil
-watchdog
+pip install playwright
+playwright install
+python -m playwright install
+
