@@ -1,0 +1,3 @@
+selenium==4.17.2
+requests==2.31.0
+psutil==5.9.8
