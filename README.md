@@ -1,5 +1,7 @@
 # Monitorador de Valores com Selenium
 
+<img width="50%" height="50%" src="https://raw.githubusercontent.com/LRRodrigues/ExAlgorit/refs/heads/main/background.png" alt="monitoramento">
+
 Este script em Python monitora alterações de um valor específico dentro de uma página web e registra as mudanças em arquivos de log.
 
 ## 🔧 Requisitos
@@ -48,6 +50,17 @@ O valor deve aparecer exatamente como escrito na página.
 
 O monitoramento é contínuo e verifica a cada 10 segundos.
 
-# 📄 Licença
+## 📄 Licença
 Este projeto é de uso livre para fins educacionais e profissionais.
 
+# BIG-O 
+
+  🧠 Resumo da Complexidade Big-O
+|Etapa | Complexidade|
+|--------------|----------|
+|Validação de entrada | O(1)|
+|Carregamento da página | O(1)|
+|Busca por elemento | O(n)|
+|Geração do XPath | O(h) ~ O(1)|
+|Monitoramento contínuo | O(m) por iteração|
+| Loop infinito | Ilimitado|
