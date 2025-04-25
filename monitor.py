@@ -1,23 +1,28 @@
-import asyncio
-import logging
-import re
-import sys
-from typing import Optional
+import asyncio # Execução assíncrona (paralela)
+import logging # Registro de logs
+import re      # Expressões regulares (validação e busca)
+import sys     # Manipulação de exceções e finalização
+from typing import Optional  # Tipagem
 
-import psutil
-from selenium import webdriver
+import psutil  # Monitoramento de CPU e memória
+from selenium import webdriver  # Controle de navegador
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import WebDriverException
-from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.chrome import ChromeDriverManager # Baixa o driver automaticamente
 
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer # Observa arquivos
+from watchdog.events import FileSystemEventHandler # Trata eventos de arquivos
 
+<<<<<<< HEAD
 # Log geral
+=======
+
+# Log geral em "monitoramento.log"
+>>>>>>> de7599e9b69ebf19e1ff66a5e54ad51b154b461e
 logging.basicConfig(
     filename="monitoramento.log",
     level=logging.INFO,
@@ -25,18 +30,28 @@ logging.basicConfig(
 )
 
 # Log específico de valores alterados
-log_valores = logging.getLogger("ValoresAlterados")
+log_valores = logging.getLogger("ValoresAlterados") # Log separado para valores detectados
 handler_valores = logging.FileHandler("valores_alterados.log")
 handler_valores.setFormatter(logging.Formatter('%(asctime)s - %(message)s'))
 log_valores.addHandler(handler_valores)
 log_valores.setLevel(logging.INFO)
 
+<<<<<<< HEAD
 def log_usuario(nome: str):
+=======
+# Valida e registra o nome do usuário
+def log_usuario(nome: str):   
+>>>>>>> de7599e9b69ebf19e1ff66a5e54ad51b154b461e
     if not re.fullmatch(r"[A-Za-z ]{3,}", nome):
         raise ValueError("Nome inválido. Use ao menos 3 letras.")
     logging.info(f"Usuário '{nome}' iniciou o monitoramento.")
 
+<<<<<<< HEAD
 def log_recursos():
+=======
+# Loga uso de CPU e memória
+def log_recursos():   
+>>>>>>> de7599e9b69ebf19e1ff66a5e54ad51b154b461e
     cpu = psutil.cpu_percent()
     mem = psutil.virtual_memory().percent
     logging.info(f"CPU: {cpu}%, Memória: {mem}%")
@@ -89,19 +104,24 @@ class PaginaMonitorada:
         self.driver.quit()
 
 class MonitorArquivos(FileSystemEventHandler):
-    def on_modified(self, event):
+    def on_modified(self, event):         # Loga arquivos modificados
         logging.info(f"Modificado: {event.src_path}")
 
-    def on_created(self, event):
+    def on_created(self, event):          # Loga arquivos criados
         logging.info(f"Criado: {event.src_path}")
 
-    def iniciar(self, caminho="."):
+    def iniciar(self, caminho="."):      # Inicia observação de arquivos
         observer = Observer()
         observer.schedule(self, caminho, recursive=True)
         observer.start()
         return observer
 
+<<<<<<< HEAD
 async def monitoramento_web(monitor: PaginaMonitorada, intervalo: int = 60):
+=======
+
+async def monitoramento_web(monitor: PaginaMonitorada, intervalo: int = 60):  # Checa repetidamente a página
+>>>>>>> de7599e9b69ebf19e1ff66a5e54ad51b154b461e
     logging.info(f"Iniciando monitoramento da URL: {monitor.url}")
     try:
         while True:
